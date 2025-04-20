@@ -1,4 +1,8 @@
 import streamlit as st
+import numpy as np
+import pandas as pd
+import datetime
+import requests
 
 '''
 # TaxiFareModel front
@@ -23,13 +27,56 @@ Either as with the title by just creating a string (or an f-string). Or as with 
 '''
 
 '''
+
+
 ## Once we have these, let's call our API in order to retrieve a prediction
 
 See ? No need to load a `model.joblib` file in this app, we do not even need to know anything about Data Science in order to retrieve a prediction...
 
 🤔 How could we call our API ? Off course... The `requests` package 💡
 '''
+# pass count
+pass_count = st.number_input('How many cars do you need?', step=1, min_value=1, max_value=40)
+st.write(pass_count)
 
+# date and time of the ride
+d = str(st.date_input(
+    "When's your taxi ride?",
+    datetime.date(2019, 7, 6)))
+st.write('Your ride is on:', d)
+
+t = str(st.time_input('Time of your ride', datetime.time(8, 45)))
+st.write("You're taking a taxi at the following time:", t)
+
+date_and_time = d + ' ' + t
+
+date_and_time = datetime.datetime.strptime(date_and_time, '%Y-%m-%d %H:%M:%S')
+
+st.write(date_and_time)
+
+
+# - pickup longitude
+# - pickup latitude
+pi_long = st.number_input('Insert pickup longitude ')
+
+st.write('The current pickup longitude is ', pi_long)
+
+pi_lat = st.number_input('Insert pickup latitude')
+
+st.write('The  current pickup latitude  is ', pi_lat)
+
+# - dropoff longitude
+# - dropoff latitude
+
+drp_long = st.number_input('Insert dropoff longitude ')
+
+st.write('The current dropoff longitude is ', drp_long)
+
+drp_lat = st.number_input('Insert dropoff latitude')
+
+st.write('The  current dropoff latitude  is ', drp_lat)
+
+###################################
 url = 'https://taxifare.lewagon.ai/predict'
 
 if url == 'https://taxifare.lewagon.ai/predict':
@@ -46,3 +93,16 @@ if url == 'https://taxifare.lewagon.ai/predict':
 
 ## Finally, we can display the prediction to the user
 '''
+#2
+params = {'pickup_datetime' : date_and_time,
+          'pickup_longitude' : pi_long,
+          'pickup_latitude' : pi_lat,
+          'dropoff_longitude' : drp_long,
+          'dropoff_latitude' : drp_lat,
+          'passenger_count': pass_count
+          } #add other params expected by the API
+
+#3
+resposne = requests.get('https://taxifare.lewagon.ai/predict', params=params)
+#4
+st.write(resposne.json())
